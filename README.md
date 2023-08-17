@@ -1,2 +1,2 @@
 # sort-it
-This programm is developed for participation in the competition held by CFT.
+This program was developed for participation in the competition held by CFT.
