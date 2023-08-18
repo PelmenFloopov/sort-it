@@ -41,14 +41,16 @@ public class sortIt
         // Wrong sorting mode handling
         if (isSortingModeSelected && !sortMode.equals("-a") && !sortMode.equals("-d"))
         {
-            System.out.printf("Wrong sorting mode. Use -a for ascending and -d for descending.\n " +
-                    "You used %s\n", sortMode);
+            System.out.printf("""
+                    Wrong sorting mode. Use -a for ascending and -d for descending. 
+                    You used %s
+                    """, sortMode);
             isCorrectParameters = false;
         }
 
         String outputFileName = isSortingModeSelected ? args[2] : args[1];
         // Wrong output file name handling
-        if (!outputFileName.matches("[a-zA-Z0-9]+\\.txt"))
+        if (!outputFileName.matches("^[^\\\\/?*:;{}\\[\\]<>|\"']+\\.txt$"))
         {
             System.out.printf("Wrong output file name. Use file with correct name with format .txt.\n " +
                     "You used %s\n", outputFileName);
@@ -94,7 +96,7 @@ public class sortIt
         boolean result = true;
         for (int i = 0; i < inputFiles.size(); i++)
         {
-            if (!inputFiles.get(i).matches("[a-zA-Z0-9]+\\.txt"))
+            if (!inputFiles.get(i).matches("^[^\\\\/?*:;{}\\[\\]<>|\"']+\\.txt$"))
             {
                 if (i == 0)
                 {
