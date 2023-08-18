@@ -185,7 +185,7 @@ public class sortIt
             throws IOException, NumberFormatException
     {
         List<String> previousElements = new ArrayList<>(Collections.nCopies(readers.size(), "")); // To check correctness of files sorting
-        Multimap<String, Integer> sorter = HashMultimap.create();
+        Multimap<String, Integer> sorter = TreeMultimap.create();
         for (int i = 0; i < readers.size(); i++)
         {
             String currentFileElement = readers.get(i).readLine().trim();
