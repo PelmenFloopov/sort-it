@@ -19,7 +19,6 @@ public class sortIt
 
     public static void main(String[] args)
     {
-
         // Not enough parameters handling
         if (args.length < 3)
         {
@@ -63,7 +62,6 @@ public class sortIt
         // Wrong input file handling
         inputFileNamesHandling(inputFiles);
 
-
         if (isCorrectParameters)
         {
             try
@@ -87,7 +85,7 @@ public class sortIt
             // Input/Output problems handling
             catch (IOException exception)
             {
-                System.out.println("An error occurred: " + exception.getMessage() + "\n" + "Cause is:" + exception.getCause());
+                System.out.println("An error occurred: " + exception.getMessage() + "\n" + "Cause is: " + exception.getCause());
             }
             // Discrepancy of data handling
             catch (NumberFormatException exception)
@@ -140,7 +138,7 @@ public class sortIt
             throws IOException, NumberFormatException
     {
         List<Integer> previousElements = new ArrayList<>(Collections.nCopies(readers.size(), Integer.MIN_VALUE)); // To check correctness of files sorting
-        Multimap<Integer, Integer> sorter = HashMultimap.create();
+        Multimap<Integer, Integer> sorter = TreeMultimap.create();
         for (int i = 0; i < readers.size(); i++)
         {
             Integer currentFileElement = Integer.parseInt(readers.get(i).readLine().trim());
@@ -180,6 +178,11 @@ public class sortIt
                 }
             }
         }
+        for (BufferedReader reader : readers)
+        {
+            reader.close();
+        }
+        writer.flush();
         writer.close();
     }
 
@@ -227,7 +230,13 @@ public class sortIt
                 }
             }
         }
+        for (BufferedReader reader : readers)
+        {
+            reader.close();
+        }
+        writer.flush();
         writer.close();
     }
+
 }
 
