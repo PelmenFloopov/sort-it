@@ -88,6 +88,13 @@ public class sortIt
             {
                 System.out.println("An error occurred: " + exception.getMessage() + "\n" + "Cause is:" + exception.getCause());
             }
+            catch (NumberFormatException exception)
+            {
+                System.out.printf("""
+                        Data doesn't match declared
+                        You declared data as %s, but real the data is %s
+                        """, dataType.equals("-i") ? "integer":"String", dataType.equals("-i") ? "String": "integer");
+            }
         }
     }
 
@@ -128,7 +135,7 @@ public class sortIt
      * @throws IOException
      */
     private static void mergeSortIntegers(@NonNull List<BufferedReader> readers, @NonNull BufferedWriter writer, boolean isAscending)
-            throws IOException
+            throws IOException, NumberFormatException
     {
         List<Integer> previousElements = new ArrayList<>(Collections.nCopies(readers.size(), Integer.MIN_VALUE)); // To check correctness of files sorting
         Multimap<Integer, Integer> sorter = HashMultimap.create();
@@ -175,9 +182,50 @@ public class sortIt
     }
 
     private static void mergeSortStrings(@NonNull List<BufferedReader> readers, @NonNull BufferedWriter writer, boolean isAscending)
-            throws IOException
+            throws IOException, NumberFormatException
     {
+        List<String> previousElements = new ArrayList<>(Collections.nCopies(readers.size(), "")); // To check correctness of files sorting
+        Multimap<String, Integer> sorter = HashMultimap.create();
+        for (int i = 0; i < readers.size(); i++)
+        {
+            String currentFileElement = readers.get(i).readLine().trim();
+            sorter.put(currentFileElement, i);
+        }
 
+        // Sorts integers by ascending order and writes them into output file
+        while (!sorter.isEmpty())
+        {
+            String lowestElement = sorter.keys().iterator().next();
+            int fileNum = sorter.get(lowestElement).iterator().next();
+            BufferedReader currFile = readers.get(fileNum);
+
+            writer.write(lowestElement);
+            writer.newLine();
+            previousElements.set(fileNum, lowestElement);
+            sorter.remove(lowestElement, fileNum);
+
+            if (currFile.ready())
+            {
+                String newValueFromCurrFile = currFile.readLine().trim();
+                while (newValueFromCurrFile.compareTo(lowestElement) < 0)
+                {
+                    if (currFile.ready())
+                    {
+                        newValueFromCurrFile = currFile.readLine().trim();
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                if (newValueFromCurrFile.compareTo(lowestElement) >= 0)
+                {
+                    sorter.put(newValueFromCurrFile, fileNum);
+                }
+            }
+        }
+        writer.close();
     }
 }
 
