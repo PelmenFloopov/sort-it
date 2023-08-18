@@ -6,7 +6,6 @@ import java.util.*;
 import com.google.common.collect.*;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-
 public class sortIt
 {
     // Formatted output constants
@@ -16,6 +15,8 @@ public class sortIt
 
     public static void main(String[] args)
     {
+        boolean isCorrectParameters = true;
+
         // Not enough parameters handling
         if (args.length < 3)
         {
@@ -27,9 +28,11 @@ public class sortIt
         // Wrong data type handling
         if (!dataType.equals("-i") && !dataType.equals("-s"))
         {
-            System.out.printf("Wrong data type parameter. Use -i for integers and -s for Strings.\n " +
-                    "You used %s", dataType);
-            return;
+            System.out.printf("""
+                    Wrong data type parameter. Use -i for integers and -s for Strings.
+                     You used %s
+                    """, dataType);
+            isCorrectParameters = false;
         }
 
         boolean isSortingModeSelected = (args[1].equals("-a") || args[1].equals("-d") || args[1].matches("-."));
@@ -39,8 +42,8 @@ public class sortIt
         if (isSortingModeSelected && !sortMode.equals("-a") && !sortMode.equals("-d"))
         {
             System.out.printf("Wrong sorting mode. Use -a for ascending and -d for descending.\n " +
-                    "You used %s", sortMode);
-            return;
+                    "You used %s\n", sortMode);
+            isCorrectParameters = false;
         }
 
         String outputFileName = isSortingModeSelected ? args[2] : args[1];
@@ -48,15 +51,47 @@ public class sortIt
         if (!outputFileName.matches("[a-zA-Z0-9]+\\.txt"))
         {
             System.out.printf("Wrong output file name. Use file with correct name with format .txt.\n " +
-                    "You used %s", outputFileName);
-            return;
+                    "You used %s\n", outputFileName);
+            isCorrectParameters = false;
         }
 
         int inputFilesStartIndex = isSortingModeSelected ? 3 : 2;
         List<String> inputFiles = new ArrayList<>();
         inputFiles.addAll(Arrays.asList(args).subList(inputFilesStartIndex, args.length));
 
-        // Wrong output file
+        // Wrong input file handling
+        isCorrectParameters = inputFileNamesHandling(inputFiles);
+
+        if (isCorrectParameters)
+        {
+            try
+            {
+                List<BufferedReader> readers = new ArrayList<>();
+                for (String inputFile : inputFiles)
+                {
+                    readers.add(new BufferedReader(new FileReader(inputFile)));
+                }
+
+                BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName));
+                if (dataType.equals("-i"))
+                {
+                    mergeSortIntegers(readers, writer, sortMode.equals("-a"));
+                }
+                else if (dataType.equals("-s"))
+                {
+                    mergeSortStrings(readers, writer, sortMode.equals("-a"));
+                }
+            }
+            catch (IOException exception)
+            {
+                System.out.println("An error occurred: " + exception.getMessage() + "\n" + "Cause is:" + exception.getCause());
+            }
+        }
+    }
+
+    private static boolean inputFileNamesHandling(@NonNull List<String> inputFiles)
+    {
+        boolean result = true;
         for (int i = 0; i < inputFiles.size(); i++)
         {
             if (!inputFiles.get(i).matches("[a-zA-Z0-9]+\\.txt"))
@@ -64,44 +99,24 @@ public class sortIt
                 if (i == 0)
                 {
                     System.out.printf("Wrong input file name. Use file with correct name with format .txt.\n " +
-                            "You used " + (RED + UNDERLINE) + "%s" + RESET + " %s", inputFiles.get(i), inputFiles.get(i + 1));
-                    return;
+                            "You used " + (RED + UNDERLINE) + "%s" + RESET + " %s\n", inputFiles.get(i), inputFiles.get(i + 1));
+                    result = false;
                 }
-                if (i == inputFiles.size() - 1)
+                else if (i == inputFiles.size() - 1)
                 {
                     System.out.printf("Wrong input file name. Use file with correct name with format .txt.\n " +
-                            "You used " + "%s " + (RED + UNDERLINE) + "%s" + RESET, inputFiles.get(i - 1), inputFiles.get(i));
-                    return;
+                            "You used " + "%s " + (RED + UNDERLINE) + "%s\n" + RESET, inputFiles.get(i - 1), inputFiles.get(i));
+                    result = false;
                 }
-
-                System.out.printf("Wrong input file name. Use file with correct name with format .txt.\n " +
-                        "You used " + "%s " + (RED + UNDERLINE) + "%s" + RESET + " %s", inputFiles.get(i-1), inputFiles.get(i), inputFiles.get(i + 1));
-                return;
+                else
+                {
+                    System.out.printf("Wrong input file name. Use file with correct name with format .txt.\n " +
+                            "You used " + "%s " + (RED + UNDERLINE) + "%s" + RESET + " %s\n", inputFiles.get(i-1), inputFiles.get(i), inputFiles.get(i + 1));
+                    result = false;
+                }
             }
         }
-
-        try
-        {
-            List<BufferedReader> readers = new ArrayList<>();
-            for (String inputFile : inputFiles)
-            {
-                readers.add(new BufferedReader(new FileReader(inputFile)));
-            }
-
-            BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName));
-            if (dataType.equals("-i"))
-            {
-                mergeSortIntegers(readers, writer, sortMode.equals("-a"));
-            }
-            else if (dataType.equals("-s"))
-            {
-                mergeSortStrings(readers, writer, sortMode.equals("-a"));
-            }
-        }
-        catch (IOException exception)
-        {
-            System.out.println("An error occurred: " + exception.getMessage() + "\n" + "Cause is:" + exception.getCause());
-        }
+        return result;
     }
 
     /**
