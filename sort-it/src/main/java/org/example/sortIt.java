@@ -1,0 +1,168 @@
+package org.example;
+
+import java.io.*;
+import java.util.*;
+
+import com.google.common.collect.*;
+import org.checkerframework.checker.nullness.qual.NonNull;
+
+
+public class sortIt
+{
+    // Formatted output constants
+    private static final String UNDERLINE = "\u001B[4m";
+    private static final String RED = "\u001B[31m";
+    private static final String RESET = "\u001B[0m";
+
+    public static void main(String[] args)
+    {
+        // Not enough parameters handling
+        if (args.length < 3)
+        {
+            System.out.println("Usage: java sort-it <sort_mode> <data_type> <output_file> <input_files...>");
+            return;
+        }
+
+        String dataType = args[0]; // -i for integers, -s for strings
+        // Wrong data type handling
+        if (!dataType.equals("-i") && !dataType.equals("-s"))
+        {
+            System.out.printf("Wrong data type parameter. Use -i for integers and -s for Strings.\n " +
+                    "You used %s", dataType);
+            return;
+        }
+
+        boolean isSortingModeSelected = (args[1].equals("-a") || args[1].equals("-d") || args[1].matches("-."));
+        String sortMode = isSortingModeSelected ? args[1] : "-a"; /* -a for ascending sorting, -d for descending sorting.
+                                                                                   Default - ascending mode */
+        // Wrong sorting mode handling
+        if (isSortingModeSelected && !sortMode.equals("-a") && !sortMode.equals("-d"))
+        {
+            System.out.printf("Wrong sorting mode. Use -a for ascending and -d for descending.\n " +
+                    "You used %s", sortMode);
+            return;
+        }
+
+        String outputFileName = isSortingModeSelected ? args[2] : args[1];
+        // Wrong output file name handling
+        if (!outputFileName.matches("[a-zA-Z0-9]+\\.txt"))
+        {
+            System.out.printf("Wrong output file name. Use file with correct name with format .txt.\n " +
+                    "You used %s", outputFileName);
+            return;
+        }
+
+        int inputFilesStartIndex = isSortingModeSelected ? 3 : 2;
+        List<String> inputFiles = new ArrayList<>();
+        inputFiles.addAll(Arrays.asList(args).subList(inputFilesStartIndex, args.length));
+
+        // Wrong output file
+        for (int i = 0; i < inputFiles.size(); i++)
+        {
+            if (!inputFiles.get(i).matches("[a-zA-Z0-9]+\\.txt"))
+            {
+                if (i == 0)
+                {
+                    System.out.printf("Wrong input file name. Use file with correct name with format .txt.\n " +
+                            "You used " + (RED + UNDERLINE) + "%s" + RESET + " %s", inputFiles.get(i), inputFiles.get(i + 1));
+                    return;
+                }
+                if (i == inputFiles.size() - 1)
+                {
+                    System.out.printf("Wrong input file name. Use file with correct name with format .txt.\n " +
+                            "You used " + "%s " + (RED + UNDERLINE) + "%s" + RESET, inputFiles.get(i - 1), inputFiles.get(i));
+                    return;
+                }
+
+                System.out.printf("Wrong input file name. Use file with correct name with format .txt.\n " +
+                        "You used " + "%s " + (RED + UNDERLINE) + "%s" + RESET + " %s", inputFiles.get(i-1), inputFiles.get(i), inputFiles.get(i + 1));
+                return;
+            }
+        }
+
+        try
+        {
+            List<BufferedReader> readers = new ArrayList<>();
+            for (String inputFile : inputFiles)
+            {
+                readers.add(new BufferedReader(new FileReader(inputFile)));
+            }
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName));
+            if (dataType.equals("-i"))
+            {
+                mergeSortIntegers(readers, writer, sortMode.equals("-a"));
+            }
+            else if (dataType.equals("-s"))
+            {
+                mergeSortStrings(readers, writer, sortMode.equals("-a"));
+            }
+        }
+        catch (IOException exception)
+        {
+            System.out.println("An error occurred: " + exception.getMessage() + "\n" + "Cause is:" + exception.getCause());
+        }
+    }
+
+    /**
+     * Sorts sequences of integers in files contained in "readers" and writes them into the "writer" output file
+     *
+     * @param readers     is a list of the input files from where we get integers
+     * @param writer      is the output file
+     * @param isAscending is the sorting mode
+     * @throws IOException
+     */
+    private static void mergeSortIntegers(@NonNull List<BufferedReader> readers, @NonNull BufferedWriter writer, boolean isAscending)
+            throws IOException
+    {
+        List<Integer> previousElements = new ArrayList<>(Collections.nCopies(readers.size(), Integer.MIN_VALUE)); // To check correctness of files sorting
+        Multimap<Integer, Integer> sorter = HashMultimap.create();
+        for (int i = 0; i < readers.size(); i++)
+        {
+            Integer currentFileElement = Integer.parseInt(readers.get(i).readLine().trim());
+            sorter.put(currentFileElement, i);
+        }
+
+        // Sorts integers by ascending order and writes them into output file
+        while (!sorter.isEmpty())
+        {
+            int lowestElement = sorter.keys().iterator().next();
+            int fileNum = sorter.get(lowestElement).iterator().next();
+            BufferedReader currFile = readers.get(fileNum);
+
+            writer.write(Integer.toString(lowestElement));
+            writer.newLine();
+            previousElements.set(fileNum, lowestElement);
+            sorter.remove(lowestElement, fileNum);
+
+            if (currFile.ready())
+            {
+                int newValueFromCurrFile = Integer.parseInt(currFile.readLine().trim());
+                while (newValueFromCurrFile < lowestElement)
+                {
+                    if (currFile.ready())
+                    {
+                        newValueFromCurrFile = Integer.parseInt(currFile.readLine().trim());
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                if (newValueFromCurrFile >= lowestElement)
+                {
+                    sorter.put(newValueFromCurrFile, fileNum);
+                }
+            }
+        }
+        writer.close();
+    }
+
+    private static void mergeSortStrings(@NonNull List<BufferedReader> readers, @NonNull BufferedWriter writer, boolean isAscending)
+            throws IOException
+    {
+
+    }
+}
+
