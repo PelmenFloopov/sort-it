@@ -6,6 +6,8 @@ import java.util.*;
 import com.google.common.collect.*;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+
+
 public class sortIt
 {
     // Formatted output constants
@@ -13,9 +15,10 @@ public class sortIt
     private static final String RED = "\u001B[31m";
     private static final String RESET = "\u001B[0m";
 
+    private static boolean isCorrectParameters = true;
+
     public static void main(String[] args)
     {
-        boolean isCorrectParameters = true;
 
         // Not enough parameters handling
         if (args.length < 3)
@@ -28,23 +31,19 @@ public class sortIt
         // Wrong data type handling
         if (!dataType.equals("-i") && !dataType.equals("-s"))
         {
-            System.out.printf("""
-                    Wrong data type parameter. Use -i for integers and -s for Strings.
-                     You used %s
-                    """, dataType);
+            System.out.printf("Wrong data type parameter. Use -i for integers and -s for Strings.\n" +
+                    "You used " + RED + "%s\n" + RESET, dataType);
             isCorrectParameters = false;
         }
 
-        boolean isSortingModeSelected = (args[1].equals("-a") || args[1].equals("-d") || args[1].matches("-."));
+        boolean isSortingModeSelected = (args[1].equals("-a") || args[1].equals("-d") || args[1].matches("-.+"));
         String sortMode = isSortingModeSelected ? args[1] : "-a"; /* -a for ascending sorting, -d for descending sorting.
                                                                                    Default - ascending mode */
         // Wrong sorting mode handling
         if (isSortingModeSelected && !sortMode.equals("-a") && !sortMode.equals("-d"))
         {
-            System.out.printf("""
-                    Wrong sorting mode. Use -a for ascending and -d for descending. 
-                    You used %s
-                    """, sortMode);
+            System.out.printf("Wrong sorting mode. Use -a for ascending and -d for descending.\n"+
+                    "You used " + RED + "%s\n" + RESET, sortMode);
             isCorrectParameters = false;
         }
 
@@ -52,8 +51,8 @@ public class sortIt
         // Wrong output file name handling
         if (!outputFileName.matches("^[^\\\\/?*:;{}\\[\\]<>|\"']+\\.txt$"))
         {
-            System.out.printf("Wrong output file name. Use file with correct name with format .txt.\n " +
-                    "You used %s\n", outputFileName);
+            System.out.printf("Wrong output file name. Use file with correct name with format .txt.\n" +
+                    "You used " + RED + "%s\n" + RESET, outputFileName);
             isCorrectParameters = false;
         }
 
@@ -62,7 +61,8 @@ public class sortIt
         inputFiles.addAll(Arrays.asList(args).subList(inputFilesStartIndex, args.length));
 
         // Wrong input file handling
-        isCorrectParameters = inputFileNamesHandling(inputFiles);
+        inputFileNamesHandling(inputFiles);
+
 
         if (isCorrectParameters)
         {
@@ -91,34 +91,32 @@ public class sortIt
         }
     }
 
-    private static boolean inputFileNamesHandling(@NonNull List<String> inputFiles)
+    private static void inputFileNamesHandling(@NonNull List<String> inputFiles)
     {
-        boolean result = true;
         for (int i = 0; i < inputFiles.size(); i++)
         {
             if (!inputFiles.get(i).matches("^[^\\\\/?*:;{}\\[\\]<>|\"']+\\.txt$"))
             {
                 if (i == 0)
                 {
-                    System.out.printf("Wrong input file name. Use file with correct name with format .txt.\n " +
+                    System.out.printf("Wrong input file name. Use file with correct name with format .txt.\n" +
                             "You used " + (RED + UNDERLINE) + "%s" + RESET + " %s\n", inputFiles.get(i), inputFiles.get(i + 1));
-                    result = false;
+                    isCorrectParameters = false;
                 }
                 else if (i == inputFiles.size() - 1)
                 {
-                    System.out.printf("Wrong input file name. Use file with correct name with format .txt.\n " +
+                    System.out.printf("Wrong input file name. Use file with correct name with format .txt.\n" +
                             "You used " + "%s " + (RED + UNDERLINE) + "%s\n" + RESET, inputFiles.get(i - 1), inputFiles.get(i));
-                    result = false;
+                    isCorrectParameters = false;
                 }
                 else
                 {
-                    System.out.printf("Wrong input file name. Use file with correct name with format .txt.\n " +
+                    System.out.printf("Wrong input file name. Use file with correct name with format .txt.\n" +
                             "You used " + "%s " + (RED + UNDERLINE) + "%s" + RESET + " %s\n", inputFiles.get(i-1), inputFiles.get(i), inputFiles.get(i + 1));
-                    result = false;
+                    isCorrectParameters = false;
                 }
             }
         }
-        return result;
     }
 
     /**
