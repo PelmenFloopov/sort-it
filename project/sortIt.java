@@ -84,14 +84,16 @@ public class sortIt
                     mergeSortStrings(readers, writer, sortMode.equals("-a"));
                 }
             }
+            // Input/Output problems handling
             catch (IOException exception)
             {
                 System.out.println("An error occurred: " + exception.getMessage() + "\n" + "Cause is:" + exception.getCause());
             }
+            // Discrepancy of data handling
             catch (NumberFormatException exception)
             {
                 System.out.printf("""
-                        Data doesn't match declared
+                        Data doesn't match declaration
                         You declared data as %s, but real the data is %s
                         """, dataType.equals("-i") ? "integer":"String", dataType.equals("-i") ? "String": "integer");
             }
