@@ -7,8 +7,6 @@ import java.util.*;
 import com.google.common.collect.*;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import javax.sound.midi.Soundbank;
-
 
 public class sortIt
 {
@@ -33,8 +31,8 @@ public class sortIt
         // Wrong data type handling
         if (!dataType.equals("-i") && !dataType.equals("-s"))
         {
-            System.out.printf("Wrong data type parameter. Use -i for integers and -s for Strings.\n" +
-                    "You used " + RED + "%s\n" + RESET, dataType);
+            System.out.printf("Incorrect data type parameter. Use -i for integers and -s for Strings.\n" +
+                    "You used " + RED + UNDERLINE + "%s\n" + RESET, dataType);
             isCorrectParameters = false;
         }
 
@@ -44,13 +42,13 @@ public class sortIt
         // Wrong sorting mode handling
         if (isSortingModeSelected && !sortMode.equals("-a") && !sortMode.equals("-d"))
         {
-            System.out.printf("Wrong sorting mode. Use -a for ascending and -d for descending.\n" +
-                    "You used " + RED + "%s\n" + RESET, sortMode);
+            System.out.printf("Incorrect sorting mode. Use -a for ascending and -d for descending.\n" +
+                    "You used " + RED + UNDERLINE + "%s\n" + RESET, sortMode);
             isCorrectParameters = false;
         }
 
         String outputFileName = isSortingModeSelected ? args[2] : args[1];
-
+        outputFileHandling(outputFileName);
 
         int inputFilesStartIndex = isSortingModeSelected ? 3 : 2;
         List<String> inputFiles = new ArrayList<>();
@@ -69,39 +67,7 @@ public class sortIt
                     readers.add(new BufferedReader(new FileReader(inputFile)));
                 }
 
-                Path outputPath;
-                // Incorrect file name handling
-                try
-                {
-                    outputPath = Paths.get(outputFileName);
-                }
-                catch (InvalidPathException invalidPathException)
-                {
-                    System.out.printf("Wrong output file name. Use file with correct name with .bin or .txt format.\n" +
-                            "You used " + RED + "%s\n" + RESET, outputFileName);
-                    return;
-                }
-
-                // Access violation handling
-                try
-                {
-                    boolean isWritable = Files.isWritable(outputPath);
-                    if (Files.exists(outputPath))
-                    {
-                        if (!isWritable)
-                        {
-                            System.out.println("Impossible to open output file: " + RED + UNDERLINE + outputFileName + RESET);
-                            return;
-                        }
-                    }
-                }
-                catch (SecurityException securityException)
-                {
-                    System.out.println("Impossible to open output file: " + RED + UNDERLINE + outputFileName + RESET);
-                    return;
-                }
                 BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName));
-
                 if (dataType.equals("-i"))
                 {
                     mergeSortIntegers(readers, writer, sortMode.equals("-a"));
@@ -128,9 +94,9 @@ public class sortIt
     }
 
     /**
-     * Checks correctness of the input files' names
+     * Checks correctness of the input files' names and access on read
      *
-     * @param inputFiles
+     * @param inputFiles list of names of input files
      */
     private static void inputFilesHandling(@NonNull List<String> inputFiles)
     {
@@ -192,6 +158,47 @@ public class sortIt
                 System.out.println(securityException.getMessage());
                 isCorrectParameters = false;
             }
+        }
+    }
+
+    /**
+     * Checks if it's possible to open output file or create it if there's no file with name "outputFileName"
+     *
+     * @param outputFileName
+     */
+    private static void outputFileHandling(@NonNull String outputFileName)
+    {
+        Path outputPath;
+        // Incorrect file name handling
+        try
+        {
+            outputPath = Paths.get(outputFileName);
+        }
+        catch (InvalidPathException invalidPathException)
+        {
+            System.out.printf("Incorrect output file name. Use file with correct name with .bin or .txt format.\n" +
+                    "You used " + RED + UNDERLINE + "%s\n" + RESET, outputFileName);
+            isCorrectParameters = false;
+            return;
+        }
+
+        // Access violation handling
+        try
+        {
+            boolean isWritable = Files.isWritable(outputPath);
+            if (Files.exists(outputPath))
+            {
+                if (!isWritable)
+                {
+                    System.out.println("Impossible to open output file: " + RED + UNDERLINE + outputFileName + RESET);
+                    isCorrectParameters = false;
+                }
+            }
+        }
+        catch (SecurityException securityException)
+        {
+            System.out.println("Impossible to open output file: " + RED + UNDERLINE + outputFileName + RESET);
+            isCorrectParameters = false;
         }
     }
 
