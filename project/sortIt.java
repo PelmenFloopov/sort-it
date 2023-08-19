@@ -21,36 +21,6 @@ public class sortIt
 
     public static void main(String[] args)
     {
-        /*for (int i = 1; i < 4; i++)
-        {
-            try
-            {
-                File tmp = new File("in" + Integer.toString(i) + ".txt");
-                if (!tmp.exists())
-                {
-                    tmp.createNewFile();
-                }
-                else
-                {
-                    tmp.delete();
-                    tmp.createNewFile();
-                }
-                BufferedWriter w = new BufferedWriter(new FileWriter(tmp));
-                for (int j = 1; j <= 100_000_000; j++)
-                {
-                    w.write(Integer.toString(j * (i % 3)));
-                    w.newLine();
-                }
-                w.close();
-            }
-            catch (IOException exception)
-            {
-                System.out.println(exception.getMessage());
-            }
-        }*/
-
-        long start = System.currentTimeMillis();
-
         // Not enough parameters handling
         if (args.length < 3)
         {
@@ -155,7 +125,6 @@ public class sortIt
                         """, "integer", "String");
             }
         }
-        System.out.println((System.currentTimeMillis() - start) / 1000);
     }
 
     /**
