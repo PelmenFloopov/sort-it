@@ -10,11 +10,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class sortIt
 {
-    // Formatted output constants
-    private static final String UNDERLINE = "\u001B[4m";
-    private static final String RED = "\u001B[31m";
-    private static final String RESET = "\u001B[0m";
-
     private static boolean isCorrectParameters = true;
 
     public static void main(String[] args)
@@ -32,7 +27,7 @@ public class sortIt
         if (!dataType.equals("-i") && !dataType.equals("-s"))
         {
             System.out.printf("Incorrect data type parameter. Use -i for integers and -s for Strings.\n" +
-                    "You used " + RED + UNDERLINE + "%s\n" + RESET, dataType);
+                    "You used " + "%s\n", dataType);
             isCorrectParameters = false;
         }
 
@@ -43,7 +38,7 @@ public class sortIt
         if (isSortingModeSelected && !sortMode.equals("-a") && !sortMode.equals("-d"))
         {
             System.out.printf("Incorrect sorting mode. Use -a for ascending and -d for descending.\n" +
-                    "You used " + RED + UNDERLINE + "%s\n" + RESET, sortMode);
+                    "You used " + "%s\n", sortMode);
             isCorrectParameters = false;
         }
 
@@ -76,6 +71,8 @@ public class sortIt
                 {
                     mergeSortStrings(readers, writer, sortMode.equals("-a"));
                 }
+                System.out.println("Program has been successfully completed.");
+                System.out.println("Result is in: " + outputFileName);
             }
             // Input/Output problems handling
             catch (IOException exception)
@@ -106,24 +103,24 @@ public class sortIt
             void print(int index);
         }
 
-        Messageble message =  index->
+        Messageble message = index ->
         {
             if (index == 0)
             {
                 System.out.printf("Wrong input file name. Use file with correct name with .bin or .txt format.\n" +
-                        "You used " + (RED + UNDERLINE) + "%s" + RESET + " %s\n", inputFiles.get(index), inputFiles.get(index + 1));
+                        "You used " + "%s" + " %s\n", inputFiles.get(index), inputFiles.get(index + 1));
                 isCorrectParameters = false;
             }
             else if (index == inputFiles.size() - 1)
             {
                 System.out.printf("Wrong input file name. Use file with correct name with .bin or .txt format.\n" +
-                        "You used " + "%s " + (RED + UNDERLINE) + "%s\n" + RESET, inputFiles.get(index - 1), inputFiles.get(index));
+                        "You used " + "%s " + "%s\n", inputFiles.get(index - 1), inputFiles.get(index));
                 isCorrectParameters = false;
             }
             else
             {
                 System.out.printf("Wrong input file name. Use file with correct name with .bin or .txt format.\n" +
-                        "You used " + "%s " + (RED + UNDERLINE) + "%s" + RESET + " %s\n", inputFiles.get(index - 1), inputFiles.get(index), inputFiles.get(index + 1));
+                        "You used " + "%s " + "%s" + " %s\n", inputFiles.get(index - 1), inputFiles.get(index), inputFiles.get(index + 1));
                 isCorrectParameters = false;
             }
         };
@@ -137,14 +134,14 @@ public class sortIt
                 // File absence handling
                 if (!Files.exists(filePath))
                 {
-                    System.out.println("No such file in this directory: " + RED + UNDERLINE  + inputFiles.get(i) + RESET);
+                    System.out.println("No such file in this directory: " + inputFiles.get(i));
                     isCorrectParameters = false;
                     continue;
                 }
                 // Access violation handling
                 if (!Files.isReadable(filePath))
                 {
-                    System.out.println("Can't read file: " + RED + UNDERLINE  + inputFiles.get(i) + RESET);
+                    System.out.println("Can't read file: " + inputFiles.get(i));
                     isCorrectParameters = false;
                 }
             }
@@ -177,7 +174,7 @@ public class sortIt
         catch (InvalidPathException invalidPathException)
         {
             System.out.printf("Incorrect output file name. Use file with correct name with .bin or .txt format.\n" +
-                    "You used " + RED + UNDERLINE + "%s\n" + RESET, outputFileName);
+                    "You used " + "%s\n", outputFileName);
             isCorrectParameters = false;
             return;
         }
@@ -190,14 +187,14 @@ public class sortIt
             {
                 if (!isWritable)
                 {
-                    System.out.println("Impossible to open output file: " + RED + UNDERLINE + outputFileName + RESET);
+                    System.out.println("Impossible to open output file: " + outputFileName);
                     isCorrectParameters = false;
                 }
             }
         }
         catch (SecurityException securityException)
         {
-            System.out.println("Impossible to open output file: " + RED + UNDERLINE + outputFileName + RESET);
+            System.out.println("Impossible to open output file: " + outputFileName);
             isCorrectParameters = false;
         }
     }
