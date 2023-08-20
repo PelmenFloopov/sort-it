@@ -47,8 +47,12 @@ public class sortIt
 
         int inputFilesStartIndex = isSortingModeSelected ? 3 : 2;
         List<String> inputFiles = new ArrayList<>();
-        inputFiles.addAll(Arrays.asList(args).subList(inputFilesStartIndex, args.length));
-
+        //  Deleting duplicate input file names
+        {
+            HashSet<String> uniqueSetOfNames = new HashSet<>();
+            uniqueSetOfNames.addAll(Arrays.asList(args).subList(inputFilesStartIndex, args.length));
+            inputFiles.addAll(uniqueSetOfNames);
+        }
         // Wrong input files handling
         inputFilesHandling(inputFiles);
 
@@ -65,11 +69,11 @@ public class sortIt
                 BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName));
                 if (dataType.equals("-i"))
                 {
-                    mergeSortIntegers(readers, writer, sortMode.equals("-a"));
+                    mergeSortIntegers(readers, writer);
                 }
                 else if (dataType.equals("-s"))
                 {
-                    mergeSortStrings(readers, writer, sortMode.equals("-a"));
+                    mergeSortStrings(readers, writer);
                 }
                 System.out.println("Program has been successfully completed.");
                 System.out.println("Result is in: " + outputFileName);
@@ -204,11 +208,10 @@ public class sortIt
      *
      * @param readers     is a list of the input files from where we get data
      * @param writer      is the output file
-     * @param isAscending is the sorting mode
      * @throws IOException           if it can't read data from files or write it into output file
      * @throws NumberFormatException if you set the data type as integer, but in files you have Strings
      */
-    private static void mergeSortIntegers(@NonNull List<BufferedReader> readers, @NonNull BufferedWriter writer, boolean isAscending)
+    private static void mergeSortIntegers(@NonNull List<BufferedReader> readers, @NonNull BufferedWriter writer)
             throws IOException, NumberFormatException
     {
         List<Integer> previousElements = new ArrayList<>(Collections.nCopies(readers.size(), Integer.MIN_VALUE)); // To check correctness of files sorting
@@ -271,10 +274,9 @@ public class sortIt
      *
      * @param readers     is a list of the input files from where we get data
      * @param writer      is the output file
-     * @param isAscending is the sorting mode
      * @throws IOException if it can't read data from files or write it into output file
      */
-    private static void mergeSortStrings(@NonNull List<BufferedReader> readers, @NonNull BufferedWriter writer, boolean isAscending)
+    private static void mergeSortStrings(@NonNull List<BufferedReader> readers, @NonNull BufferedWriter writer)
             throws IOException
     {
         List<String> previousElements = new ArrayList<>(Collections.nCopies(readers.size(), "")); // To check correctness of files sorting
